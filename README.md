@@ -8,12 +8,14 @@ Simple timer to track how much time has passed in milliseconds that is
 overflow safe. It has start/stop/expired support, interval alert support, and
 easy debounce support.
 
+This library should work with any Arduino, but the examples are written
+for the Particle Photon.
 ```
 #include "PollingTimer.h"
 
 PollingTimer timer(100);
 PollingTimer interval(50);
-PollingTimer debounce(10);
+Debouncer debounce(10);
 
 void setup() {
   pinMode(D0, INPUT_PULLDOWN);
@@ -29,7 +31,7 @@ void loop() {
   if (interval.interval())
     Serial.print("50 milliseconds, repeating.");
 
-  if (timer.debounce(digitalRead(D0)))
+  if (debounce.debounce(digitalRead(D0)))
     Serial.print("Button pushed.");
 }
 ```

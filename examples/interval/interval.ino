@@ -12,7 +12,7 @@ void setup() {
   pinMode(D7, OUTPUT);
   digitalWrite(D7, 0);
 
-  // The intervals will never fire if you don't start the timer.
+  // Start/Stop on the timer will start/stop the intervals.
   timer.start();
 }
 

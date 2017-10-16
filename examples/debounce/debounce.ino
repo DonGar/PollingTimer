@@ -1,20 +1,26 @@
 
 #include "PollingTimer.h"
 
-// If the digital read from pin D0 is true for >= 50 milliseconds, turn
-// on pin D7. If D0 reads false, turn off D7.
+// Hook up an button between 3.3v and D0.
+//
+// Tap the button, and nothing happens. Hold the button, and the D7 led
+// stays on for as long as you hold it. You get a serial console message
+// when pushing the button, but it doesn't repeat until you let off and
+// then hold the button again.
 
-const unsigned long MILLIS = 1000; // Long debounce to make it easier to see.
+const unsigned long MILLIS = 2000; // Long debounce to make it easier to see.
 
-PollingTimer timer(MILLIS);
+Debouncer debouncer(MILLIS);
 
 void setup() {
   pinMode(D0, INPUT_PULLDOWN);
   pinMode(D7, OUTPUT);
-
+  Serial.begin(9600);
 }
 
 void loop() {
-  bool input = timer.debounce(digitalRead(D0));
-  digitalWrite(D7, input);
+  if (debouncer.debounce(digitalRead(D0))) {
+    Serial.println("D0 active!");
+  }
+  digitalWrite(D7, debouncer.value());
 }

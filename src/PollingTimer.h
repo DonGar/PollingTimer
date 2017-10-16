@@ -18,13 +18,26 @@ public:
   // Control
   //
 
+  // Calling start on a running timer will reset the timer.
   inline void start() {
     this->_start = millis();
     this->_running = true;
   }
 
+  // A stopped timer will never expire or trigger an interval.
   inline void stop() {
     this->_running = false;
+  }
+
+  // Start/stop the timer based on target. Does NOT reset the timer if already
+  // running.
+  inline void set_running(bool target=true) {
+    if (target) {
+      if (!this->running())
+        this->start();
+    } else {
+      this->stop();
+    }
   }
 
   //
@@ -75,20 +88,6 @@ public:
     return result;
   }
 
-  // Convenient helper for debouncing false -> true. Pass in the value to
-  // debounce each loop. Returns true while the value is true and time >
-  // debounce interval. Does not debounce true -> false. Do not use
-  // start/stop.
-  inline bool debounce(bool value) {
-    if (value && !this->running())
-      this->start();
-
-    if (!value)
-      this->stop();
-
-    return this->_expired();
-  }
-
 private:
   inline bool _expired() {
     // This ordering is int overflow safe, as long as the actual time since
@@ -99,4 +98,41 @@ private:
   bool _running;
   unsigned long _start;
   unsigned long _delay;
+};
+
+
+// Debouncer makes inconsistent input values more consistent.
+//   debounce_time: How long does an input need to be consistent to be trusted?
+//                  Used for both false -> true and true -> false.
+//   initial: What is the initial value?
+class Debouncer {
+public:
+  inline Debouncer(unsigned long debounce_time=10, bool initial=false) :
+      _value(initial), _timer(debounce_time) {};
+
+  // Update the debouncer with a new input value.
+  //   input: Is the value the the value to debounce. A GPIO input, etc.
+  //
+  // Return: true when value() transitions from false to true.
+  //         Useful for trigging an action on button press, etc.
+  inline bool debounce(bool input) {
+    // Ensure the timer is running if input != to current value.
+    this->_timer.set_running(input != this->value());
+
+    if (this->_timer.expired()) {
+      this->_value = input;
+      return input;
+    }
+
+    return false;
+  }
+
+  // The current debounced value.
+  inline bool value() {
+    return this->_value;
+  }
+
+private:
+  bool _value;
+  PollingTimer _timer;
 };
