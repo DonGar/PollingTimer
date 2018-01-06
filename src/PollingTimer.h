@@ -132,6 +132,12 @@ public:
     return this->_value;
   }
 
+  // We are in the middle of a potential value change, so the current value
+  // is "soft".
+  inline bool soft() {
+    return this->_timer.running();
+  }
+
 private:
   bool _value;
   PollingTimer _timer;
