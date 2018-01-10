@@ -11,8 +11,8 @@
 
 class PollingTimer {
 public:
-  inline PollingTimer(unsigned long delay_millis) :
-      _running(false), _delay(delay_millis) {};
+  inline PollingTimer(unsigned long delay_millis, bool started=false) :
+      _running(started), _delay(delay_millis) {};
 
   //
   // Control
