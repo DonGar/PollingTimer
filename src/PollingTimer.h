@@ -113,16 +113,27 @@ public:
   // Update the debouncer with a new input value.
   //   input: Is the value the the value to debounce. A GPIO input, etc.
   //
-  // Return: true when value() transitions from false to true.
-  //         Useful for trigging an action on button press, etc.
-  inline bool debounce(bool input) {
+  // Return: true when value() changes.
+  inline bool changed(bool input) {
     // Ensure the timer is running if input != to current value.
     this->_timer.set_running(input != this->value());
 
     if (this->_timer.expired()) {
       this->_value = input;
-      return input;
+      return true;
     }
+
+    return false;
+  }
+
+  // Update the debouncer with a new input value.
+  //   input: Is the value the the value to debounce. A GPIO input, etc.
+  //
+  // Return: true when value() transitions from false to true.
+  //         Useful for trigging an action on button press, etc.
+  inline bool debounce(bool input) {
+    if (this->changed(input))
+      return this->_value;
 
     return false;
   }
