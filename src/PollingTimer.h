@@ -7,7 +7,12 @@
 
  */
 
+#if defined(SPARK)
 #include "Particle.h"
+#else //defined(SPARK)
+#include "Arduino.h"
+#endif  //defined(SPARK)
+
 
 class PollingTimer {
 public:
